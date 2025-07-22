@@ -1,0 +1,114 @@
+Page replacement algorithms are used in operating systems to manage **virtual memory**. When a program needs a page that is not in memory (a **page fault**), the system must bring it from disk. If memory is full, the system needs to **replace** one of the existing pages. Page replacement algorithms determine which page to remove.
+
+Here's an explanation of three common algorithms:
+
+---
+
+### **1. FIFO (First-In, First-Out)**
+
+* **Idea**: Replace the page that has been in memory the **longest**, regardless of how often or recently it was used.
+
+* **How it works**:
+
+  * Maintain a queue of pages in memory.
+  * When a page fault occurs and memory is full, remove the page at the front of the queue and insert the new page at the back.
+
+* **Example**:
+
+  ```
+  Page sequence: 1 2 3 4 1 2 5
+  Memory size: 3
+
+  Steps:
+  Load 1 → [1]
+  Load 2 → [1 2]
+  Load 3 → [1 2 3]
+  Load 4 → Page fault, remove 1 → [2 3 4]
+  Load 1 → Page fault, remove 2 → [3 4 1]
+  Load 2 → Page fault, remove 3 → [4 1 2]
+  Load 5 → Page fault, remove 4 → [1 2 5]
+
+  Total Page Faults = 7
+  ```
+
+* **Pros**: Simple to implement.
+
+* **Cons**: Doesn’t consider page usage → **may remove important pages**.
+
+---
+
+### **2. LRU (Least Recently Used)**
+
+* **Idea**: Replace the page that was **used least recently**.
+
+* **How it works**:
+
+  * Track usage history.
+  * When a page fault occurs, remove the page that hasn’t been used in the longest time.
+
+* **Example**:
+
+  ```
+  Page sequence: 1 2 3 4 1 2 5
+  Memory size: 3
+
+  Steps:
+  Load 1 → [1]
+  Load 2 → [1 2]
+  Load 3 → [1 2 3]
+  Load 4 → Page fault, remove 1 → [2 3 4]
+  Load 1 → Page fault, remove 2 → [3 4 1]
+  Load 2 → Page fault, remove 3 → [4 1 2]
+  Load 5 → Page fault, remove 4 → [1 2 5]
+
+  Total Page Faults = 7
+  ```
+
+* **Pros**: Good approximation of optimal.
+
+* **Cons**: Requires tracking past usage → **more overhead**.
+
+---
+
+### **3. Optimal (OPT or MIN)**
+
+* **Idea**: Replace the page that **will not be used for the longest time** in the future.
+
+* **How it works**:
+
+  * Requires **future knowledge** of the page sequence.
+  * Not implementable in real systems, used only for **theoretical comparison**.
+
+* **Example**:
+
+  ```
+  Page sequence: 1 2 3 4 1 2 5
+  Memory size: 3
+
+  Steps:
+  Load 1 → [1]
+  Load 2 → [1 2]
+  Load 3 → [1 2 3]
+  Load 4 → Page fault. 3 is used farthest in future → remove 3 → [1 2 4]
+  Load 1 → Hit
+  Load 2 → Hit
+  Load 5 → Page fault. 4 is not used again → remove 4 → [1 2 5]
+
+  Total Page Faults = **5**
+  ```
+
+* **Pros**: **Lowest possible number** of page faults.
+
+* **Cons**: Not practical, only used for analysis.
+
+---
+
+### 🔁 Summary Table
+
+| Algorithm | Replacement Criteria     | Pros                           | Cons                       |
+| --------- | ------------------------ | ------------------------------ | -------------------------- |
+| FIFO      | Oldest page              | Simple to implement            | Ignores usage pattern      |
+| LRU       | Least recently used page | Better than FIFO in most cases | Costly to track usage      |
+| Optimal   | Farthest future use      | Best performance               | Not usable in real systems |
+
+Let me know if you'd like to see these visualized or implemented in code.
